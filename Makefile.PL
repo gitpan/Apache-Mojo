@@ -9,7 +9,7 @@ WriteMakefile(
   NAME      => 'Apache::Mojo',
   AUTHOR    => 'Dave\ Sherohman\ \<dave\@sherohman\.org\>',
   ABSTRACT  => 'mod_perl handler for Mojo',
-  VERSION   => '0.002',
+  VERSION   => '0.003',
   EXE_FILES => [ qw() ],
   (eval { ExtUtils::MakeMaker->VERSION(6.21) } ? (LICENSE => 'perl') : ()),
   PREREQ_PM    => {

@@ -1,5 +1,5 @@
 package Apache::Mojo;
-our $VERSION = '0.002';
+our $VERSION = '0.003';
 
 
 use strict;
@@ -91,12 +91,19 @@ sub _request {
     # body
     $req->state('content');
     $req->content->state('body');
+
+    # handle application/x-www-form-encoded content
+    my $post_params = $r->content;
+    $req->parse($post_params) if $post_params;
+
+    # handle any body content that isn't application/x-www-form-encoded
     my $offset = 0;
     while (!$req->is_state(qw/done error/)) {
         last unless (my $read = $r->read(my $buffer, 4096, $offset));
         $offset += $read;
         $req->parse($buffer);
     }
+
 }
 
 sub _response {
@@ -117,8 +124,24 @@ sub _response {
     # content-type gets ignored in headers_out()
     $r->content_type($headers->header('Content-Type'));
 
-    # body
-    print $res->body;
+    # Response body
+    my $offset = 0;   
+    while (1) { 
+        my $chunk = $res->get_body_chunk($offset);
+
+        # No content yet, try again
+        unless (defined $chunk) {
+            sleep 1;
+            next;
+        }
+         
+        # End of content
+        last unless length $chunk;
+
+        # Content
+        my $written = STDOUT->syswrite($chunk);
+        $offset += $written;
+    }
 }
 
 
@@ -134,7 +157,7 @@ Apache::Mojo - mod_perl handler for Mojo
 
 =head1 VERSION
 
-version 0.002
+version 0.003
 
 =head1 SYNOPSIS
 

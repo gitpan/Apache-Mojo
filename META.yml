@@ -8,4 +8,4 @@ name: Apache-Mojo
 requires: 
   Apache: 0
   Mojo: 0
-version: 0.002
+version: 0.003
